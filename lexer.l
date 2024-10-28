@@ -29,4 +29,14 @@ extern std::shared_ptr<Token> curtoken;
     curtoken = Token::New<Integer>(10, yytext);
     return L_INTEGER;
 }
-.        ;
+
+
+
+[ \t\n]+ {colno += yyleng;}
+
+.   {
+    colno += yyleng;
+    curtoken = Token::New<Rejected>(yytext);
+    fprintf(stderr, "Lexer Error at line %d, column %d: Unrecognized token '%s'\n", yylineno, colno, yytext);
+    return YYUNDEF;
+}

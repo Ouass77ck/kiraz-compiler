@@ -16,6 +16,7 @@ public:
     using Cptr = std::shared_ptr<const Node>;
 
     Node() {}
+    Node(int i) {}
     virtual ~Node();
 
     virtual std::string as_string() const = 0;

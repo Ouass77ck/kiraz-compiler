@@ -3,6 +3,6 @@
 
 namespace token {
 
-Integer::~Integer() = default;
+Integer::~Integer() {}
 
 }
