@@ -24,4 +24,9 @@ extern std::shared_ptr<Token> curtoken;
 "("          {colno += yyleng; curtoken = Token::New<OpLparen>(); return OP_LPAREN;}
 ")"          {colno += yyleng; curtoken = Token::New<OpRparen>(); return OP_RPAREN;}
 
+[0-9]+ {
+    colno += yyleng;
+    curtoken = Token::New<Integer>(10, yytext);
+    return L_INTEGER;
+}
 .        ;

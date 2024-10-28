@@ -15,6 +15,7 @@ extern int yylineno;
 
 %token OP_LPAREN OP_RPAREN
 %token OP_PLUS OP_MINUS OP_DIVF OP_MULT
+%token L_INTEGER
 
 %%
 
