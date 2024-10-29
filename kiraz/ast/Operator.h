@@ -16,13 +16,15 @@ protected:
 public:
     auto get_left() const {return m_left; }
     auto get_right() const {return m_right; }
+    
 
     std::string as_string() const override {
         assert(get_left());
         assert(get_right());
 
         std::string opstr;
-        switch(getuid()) {
+        int op_id = get_id();
+        switch(op_id) {
             case OP_PLUS:
                 opstr = "Add";
                 break;
@@ -34,6 +36,9 @@ public:
                 break;
             case OP_DIVF:
                 opstr = "DivF";
+                break;
+            default:
+                opstr = "UnknownOp";
                 break;
         }
         return fmt::format("{}({},{})",opstr, get_left()->as_string(), get_right()->as_string());
