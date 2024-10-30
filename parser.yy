@@ -65,3 +65,15 @@ int yyerror(const char *s) {
     Node::reset_root();
     return 1;
 }
+int yyerror(const char *s) {
+    if (curtoken) {
+        fmt::print("** Parser Error at {}:{} at token: {}\n",
+            yylineno, Token::colno, curtoken->as_string());
+    } else {
+        fmt::print("** Parser Error at {}:{}, null token\n",
+            yylineno, Token::colno);
+    }
+    Token::colno = 0;
+    Node::reset_root();
+    return 1;
+}

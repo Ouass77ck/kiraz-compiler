@@ -34,9 +34,10 @@ extern std::shared_ptr<Token> curtoken;
 
 [ \t\n]+ {colno += yyleng;}
 
+
 .   {
     colno += yyleng;
     curtoken = Token::New<Rejected>(yytext);
-    fprintf(stderr, "Lexer Error at line %d, column %d: Unrecognized token '%s'\n", yylineno, colno, yytext);
-    return YYUNDEF;
+    fprintf(stderr, "** Lexer Error at line %d, column %d: Unrecognized token '%s'\n", yylineno, colno, yytext);
+    return REJECTED;
 }
