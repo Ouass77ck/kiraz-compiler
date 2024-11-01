@@ -11,6 +11,12 @@ extern std::shared_ptr<Token> curtoken;
 extern int yylineno;
 %}
 
+%token KW_LET
+%token IDENTIFIER
+%token OP_ASSIGN
+
+
+
 %token REJECTED
 
 %token      OP_LPAREN
@@ -29,8 +35,10 @@ extern int yylineno;
 %%
 
 stmt
-    : OP_LPAREN stmt OP_RPAREN {$$=$2;}
-    |addsub
+    : KW_LET IDENTIFIER                    { $$ = Node::add<ast::OpAssign>($2); }
+    | KW_LET IDENTIFIER OP_ASSIGN addsub   { $$ = Node::add<ast::OpAssign>($2, $4); }
+    | OP_LPAREN stmt OP_RPAREN             { $$ = $2; }
+    | addsub
     ;
 
 addsub
@@ -50,21 +58,10 @@ posneg
     | OP_PLUS stmt {$$=Node::add<ast::SignedNode>(OP_PLUS,$2);}
     | OP_MINUS stmt {$$=Node::add<ast::SignedNode>(OP_MINUS,$2);}
     ;
+
+
 %%
 
-int yyerror(const char *s) {
-    if (curtoken) {
-        fmt::print("** Parser Error at {}:{} at token: {}\n",
-            yylineno, Token::colno, curtoken->as_string());
-    }
-    else {
-        fmt::print("** Parser Error at {}:{}, null token\n",
-            yylineno, Token::colno);
-    }
-    Token::colno = 0;
-    Node::reset_root();
-    return 1;
-}
 int yyerror(const char *s) {
     if (curtoken) {
         fmt::print("** Parser Error at {}:{} at token: {}\n",

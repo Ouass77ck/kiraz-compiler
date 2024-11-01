@@ -37,6 +37,8 @@ public:
             case OP_DIVF:
                 opstr = "DivF";
                 break;
+            case OP_ASSIGN:
+              opstr = "Assign";
             default:
                 opstr = "UnknownOp";
                 break;
@@ -69,6 +71,22 @@ class OpDivF : public OpBinary {
     OpDivF(const Node::Ptr &left, const Node::Ptr &right) : OpBinary(OP_DIVF, left, right)  {}
 
 };
+
+class OpAssign : public Node {
+public:
+    OpAssign(const Node::Ptr &left, const Node::Ptr &right = nullptr) : Node(OP_ASSIGN), m_left(left), m_right(right) {}
+
+    std::string as_string() const override {
+        if (m_right) {
+            return fmt::format("Assign({}, {})", m_left->as_string(), m_right->as_string());
+        }
+        return fmt::format("Assign({})", m_left->as_string());
+    }
+
+private:
+    Node::Ptr m_left, m_right;
+};
+
 
 }
 #endif // KIRAZ_AST_OPERATOR_H

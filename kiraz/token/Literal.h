@@ -27,6 +27,22 @@ public:
         std::string m_value;
 };
 
+class Keyword : public Token {
+public:
+    explicit Keyword(const std::string &value) : Token(KW_LET), m_value(value) {}
+    std::string as_string() const override { return "Keyword(" + m_value + ")"; }
+private:
+    std::string m_value;
+};
+
+class Identifier : public Token {
+public:
+    explicit Identifier(const std::string &value) : Token(IDENTIFIER), m_value(value) {}
+    std::string as_string() const override { return "Identifier(" + m_value + ")"; }
+private:
+    std::string m_value;
+};
+
 }
 
 #endif // KIRAZ_TOKEN_LITERAL_H
