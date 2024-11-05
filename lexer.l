@@ -20,7 +20,7 @@ extern std::shared_ptr<Token> curtoken;
 ")"          {colno += yyleng; curtoken = Token::New<OpRparen>(); return OP_RPAREN;}
 "="          {colno += yyleng; curtoken = Token::New<OpAssign>(); return OP_ASSIGN;}
 ":"          {colno += yyleng; curtoken = Token::New<OpColon>(); return OP_COLON; }
-";"          {colno += yyleng; curtoken = Token::New<OpColon>(); return OP_SEMICOLON; }
+";"          {colno += yyleng; return OP_SEMICOLON; }
 
 
 [0-9]+ {
@@ -37,9 +37,30 @@ extern std::shared_ptr<Token> curtoken;
 
 \"([^\"\\]|\\[\"ntr])*\" {
     colno += yyleng;
-    curtoken = Token::New<String>(yytext);
+    std::string decoded_text;
+    for (size_t i = 1; i < yyleng - 1; ++i) {  
+        if (yytext[i] == '\\' && i + 1 < yyleng - 1) {
+            switch (yytext[i + 1]) {
+                case 'n': decoded_text += '\n'; break;
+                case 't': decoded_text += '\t'; break;
+                case 'r': decoded_text += '\r'; break;
+                case '\\': decoded_text += '\\'; break;
+                case '"': decoded_text += '"'; break;
+                default:
+                    decoded_text += '\\';
+                    decoded_text += yytext[i + 1];
+                    break;
+            }
+            ++i; 
+        } else {
+            decoded_text += yytext[i];
+        }
+    }
+
+    curtoken = Token::New<String>(decoded_text);
     return SSTRING;
 }
+
 
 [a-zA-Z_]+[a-zA-Z0-9_]* {
     colno += yyleng;

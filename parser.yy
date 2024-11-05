@@ -92,8 +92,7 @@ type
     ;
 
 str
-    : SSTRING {$$ = Node::add<ast::String>(curtoken);}
-    | SSTRING OP_SEMICOLON {$$ = Node::add<ast::String>(curtoken);}
+    : SSTRING OP_SEMICOLON {$$ = Node::add<ast::String>(curtoken);}
     ;
 %%
 
