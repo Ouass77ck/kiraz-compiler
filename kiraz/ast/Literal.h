@@ -32,6 +32,15 @@ public:
 private:
     std::string m_value;
 };
+
+class Identifier : public Node {
+public:
+    Identifier(Token::Ptr);
+
+    std::string as_string() const override {return fmt::format("Identifier({})", m_value);}
+private:
+    std::string m_value;
+};
 }
 
 #endif
