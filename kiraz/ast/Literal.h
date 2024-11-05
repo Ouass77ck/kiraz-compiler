@@ -41,6 +41,15 @@ public:
 private:
     std::string m_value;
 };
+
+class String : public Node {
+public:
+    String(Token::Ptr);
+
+    std::string as_string() const override {return fmt::format("Str({})", m_value);}
+private:
+    std::string m_value;
+};
 }
 
 #endif

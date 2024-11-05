@@ -20,8 +20,11 @@ extern int yylineno;
 %token OP_DIVF
 %token OP_MULT
 %token OP_COLON
+%token OP_SEMICOLON
+
 %token L_INTEGER
 %token TYPE
+%token SSTRING
 
 %token REJECTED
 
@@ -38,6 +41,7 @@ program
 stmt
     : assignment
     | expression
+    | str 
     ;
 
 assignment
@@ -87,6 +91,10 @@ type
     : TYPE { $$ = Node::add<ast::Type>(curtoken); }
     ;
 
+str
+    : SSTRING {$$ = Node::add<ast::String>(curtoken);}
+    | SSTRING OP_SEMICOLON {$$ = Node::add<ast::String>(curtoken);}
+    ;
 %%
 
 int yyerror(const char *s) {

@@ -11,4 +11,6 @@ Identifier::~Identifier() {}
 
 Type::~Type() {}
 
+String::~String() {}
+
 }

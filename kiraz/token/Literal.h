@@ -71,6 +71,20 @@ private:
     int m_id;
     std::string m_value;
 };
+
+class String : public Token {
+public:
+    String(const std::string &value) : Token(SSTRING), m_value(value) {}
+    virtual ~String();
+    std::string as_string() const override { return fmt::format("Str{}", m_value); }
+
+    void print() {fmt::print("{}\n", as_string());}
+    static int colno;
+    auto get_value() const {return m_value;}
+private:
+    int m_id;
+    std::string m_value;
+};
 }
 
 #endif // KIRAZ_TOKEN_LITERAL_H

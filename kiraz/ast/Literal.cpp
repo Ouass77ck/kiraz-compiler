@@ -27,4 +27,10 @@ Identifier::Identifier(Token::Ptr t) : Node(IDENTIFIER) {
     m_value = token_identifier->get_value();
 }
 
+String::String(Token::Ptr t) : Node(SSTRING) {
+    assert(t->get_id() == SSTRING);
+    auto token_identifier = std::static_pointer_cast<const token::String>(t);
+    m_value = token_identifier->get_value();
+}
+
 }

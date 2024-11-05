@@ -41,6 +41,7 @@ public:
     static auto &current_root() {
         assert(! s_roots.empty());
         return s_roots.back();
+       
     }
 
 private:

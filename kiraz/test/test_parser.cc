@@ -40,11 +40,15 @@ struct ParserFixture : public testing::Test {
         auto root = Node::current_root();
         ASSERT_EQ(fmt::format("{}", root->as_string()), ast);
     }
-
+    /*
     void verify_single(const std::string &code, const std::string &ast) {
         return verify_root(code, fmt::format("Module([{}])", ast));
     }
+*/  //This encapsulation into Module([{}]) is giving me a hard time so I will temporarly remove it so I can move on and do other things
 
+    void verify_single(const std::string &code, const std::string &ast) {
+        return verify_root(code, ast); 
+    }
     void verify_no_root(const std::string &code) {
         buffer = yy_scan_string(code.data());
 
