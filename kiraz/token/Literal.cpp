@@ -5,6 +5,8 @@ namespace token {
 
 Integer::~Integer() {}
 
+Integer2::~Integer2() {}
+
 Keyword::~Keyword() {}
 
 Identifier::~Identifier() {}

@@ -14,7 +14,17 @@ Integer::Integer(Token::Ptr t) :Node(L_INTEGER){
         //TODO MARK THIS Node as invalide
     }
 }
-
+Integer2::Integer2(Token::Ptr t) :Node(L_INTEGER){
+    assert(t->get_id()== L_INTEGER);
+    auto token_int=std::static_pointer_cast<const token::Integer2>(t);
+    auto base = token_int->get_base();
+    try{
+        m_value=std::stoll(token_int->get_value(),nullptr,base);
+    }
+    catch (std::out_of_range &e){
+        //TODO MARK THIS Node as invalide
+    }
+}
 Type::Type(Token::Ptr t) : Node(TYPE) {
     assert(t->get_id() == TYPE);
     auto token_type = std::static_pointer_cast<const token::Type>(t);

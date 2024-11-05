@@ -33,7 +33,6 @@ extern int yylineno;
 %right OP_ASSIGN
 
 %%
-
 program
     : stmt
     ;
@@ -41,21 +40,18 @@ program
 stmt
     : assignment
     | expression
+    | expression_with_semicolon
     | str 
     ;
 
 assignment
-    : KW_LET id OP_ASSIGN expression {
-        printf("Token received for IDENTIFIER: %s\n", $2 ? "non-null" : "null");
-        assert($2 != nullptr);
-        assert($4 != nullptr);
-        printf("ID: %s\n", $2->as_string().c_str());
+    : KW_LET id OP_ASSIGN expression OP_SEMICOLON{
         $$ = Node::add<ast::OpAssignLiteral>($2, $4);
     }
-    | KW_LET id OP_COLON type OP_ASSIGN expression {
+    | KW_LET id OP_COLON type OP_ASSIGN expression OP_SEMICOLON{
         $$ = Node::add<ast::OpAssignTypeAndLiteral>($2, $4, $6);
     }
-    | KW_LET id OP_COLON type {
+    | KW_LET id OP_COLON type OP_SEMICOLON{
         $$ = Node::add<ast::OpAssignType>($2, $4);
     }
     ;
@@ -65,26 +61,39 @@ id
     ;
 
 expression
-    : term
-    | expression OP_PLUS term { $$ = Node::add<ast::OpAdd>($1, $3); }
-    | expression OP_MINUS term { $$ = Node::add<ast::OpSub>($1, $3); }
+    : expression OP_PLUS expression { $$ = Node::add<ast::OpAdd>($1, $3); }
+    | expression OP_MINUS expression { $$ = Node::add<ast::OpSub>($1, $3); }
+    | term
+    ;
+
+expression_with_semicolon
+    : expression OP_PLUS expression OP_SEMICOLON { $$ = Node::add<ast::OpAdd2>($1, $3); }
+    | expression OP_MINUS expression OP_SEMICOLON { $$ = Node::add<ast::OpSub2>($1, $3); }
+    | term_with_semicolon
     ;
 
 term
-    : factor
-    | term OP_MULT factor { $$ = Node::add<ast::OpMult>($1, $3); }
-    | term OP_DIVF factor { $$ = Node::add<ast::OpDivF>($1, $3); }
+    : term OP_MULT term { $$ = Node::add<ast::OpMult>($1, $3); }
+    | term OP_DIVF term { $$ = Node::add<ast::OpDivF>($1, $3); }
+    | factor
     ;
 
+term_with_semicolon
+    : term OP_MULT term OP_SEMICOLON { $$ = Node::add<ast::OpMult2>($1, $3); }
+    | term OP_DIVF term OP_SEMICOLON { $$ = Node::add<ast::OpDivF2>($1, $3); }
+    | factor OP_SEMICOLON { $$ = $1; }
+    ;
+    
 factor
     : posneg
     | OP_LPAREN expression OP_RPAREN { $$ = $2; }
     ;
 
+
 posneg
     : L_INTEGER { $$ = Node::add<ast::Integer>(curtoken); }
-    | OP_PLUS expression { $$ = Node::add<ast::SignedNode>(OP_PLUS, $2); }
-    | OP_MINUS expression { $$ = Node::add<ast::SignedNode>(OP_MINUS, $2); }
+    | OP_PLUS factor { $$ = Node::add<ast::SignedNode>(OP_PLUS, $2); }
+    | OP_MINUS factor { $$ = Node::add<ast::SignedNode>(OP_MINUS, $2); }
     ;
 
 type
@@ -92,7 +101,7 @@ type
     ;
 
 str
-    : SSTRING OP_SEMICOLON {$$ = Node::add<ast::String>(curtoken);}
+    : SSTRING OP_SEMICOLON { $$ = Node::add<ast::String>(curtoken); }
     ;
 %%
 

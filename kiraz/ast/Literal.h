@@ -12,6 +12,14 @@ public:
 private:
     int64_t m_value;
 };
+class Integer2 : public Node {
+public:
+    Integer2(Token::Ptr);
+
+    std::string as_string() const override {return fmt::format("Int(10,{})", m_value);}
+private:
+    int64_t m_value;
+};
 
 class SignedNode : public Node {
 public:
