@@ -25,8 +25,11 @@ extern int yylineno;
 %token      OP_MINUS
 %token      OP_DIVF
 %token      OP_MULT
+%token      OP_COLON
 
 %token      L_INTEGER
+
+%token      TYPE
 
 %left OP_PLUS OP_MINUS
 %left OP_MULT OP_DIVF
@@ -34,9 +37,11 @@ extern int yylineno;
 
 %%
 
+
 stmt
-    : KW_LET IDENTIFIER                    { $$ = Node::add<ast::OpAssign>($2); }
-    | KW_LET IDENTIFIER OP_ASSIGN addsub   { $$ = Node::add<ast::OpAssign>($2, $4); }
+    : KW_LET IDENTIFIER OP_ASSIGN addsub   { printf("ID: %s\n", $2->as_string().c_str()); }
+    | KW_LET IDENTIFIER OP_COLON type { $$ = Node::add<ast::OpAssignType>($2, $4); }
+    | KW_LET IDENTIFIER OP_COLON type OP_ASSIGN addsub { $$ = Node::add<ast::OpAssignTypeAndLiteral>($2, $4,$6); }
     | OP_LPAREN stmt OP_RPAREN             { $$ = $2; }
     | addsub
     ;
@@ -59,7 +64,8 @@ posneg
     | OP_MINUS stmt {$$=Node::add<ast::SignedNode>(OP_MINUS,$2);}
     ;
 
-
+type
+    : TYPE {$$=Node::add<ast::Type>(curtoken);}
 %%
 
 int yyerror(const char *s) {

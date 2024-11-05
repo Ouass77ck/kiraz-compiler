@@ -72,21 +72,67 @@ class OpDivF : public OpBinary {
 
 };
 
-class OpAssign : public Node {
+class OpAssignLiteral : public Node {
 public:
-    OpAssign(const Node::Ptr &left, const Node::Ptr &right = nullptr) : Node(OP_ASSIGN), m_left(left), m_right(right) {}
-
-    std::string as_string() const override {
-        if (m_right) {
-            return fmt::format("Assign({}, {})", m_left->as_string(), m_right->as_string());
+    explicit OpAssignLiteral(const Node::Ptr &left, const Node::Ptr &right)
+        : Node(OP_ASSIGN), m_left(left), m_right(right) {
+            assert (left);
+            assert (right);
         }
-        return fmt::format("Assign({})", m_left->as_string());
+
+    auto get_left() const {return m_left; }
+    auto get_right() const {return m_right; }
+    std::string as_string() const override {
+        assert(get_left());
+        assert(get_right());
+        return fmt::format("({} = {})", get_left()->as_string(), get_right()->as_string());
     }
 
 private:
     Node::Ptr m_left, m_right;
 };
 
+class OpAssignType : public Node {
+
+public:
+    explicit OpAssignType(const Node::Ptr &left, const Node::Ptr &type)
+        : Node(OP_ASSIGN), m_left(left), m_type(type) {
+            assert(left);
+            assert(type);
+        }
+    auto get_left() const {return m_left; }
+    auto get_type() const {return m_type; }
+    std::string as_string() const override {
+        assert(get_left());
+        assert(get_type());
+        return fmt::format("({}: {})",get_left()->as_string(), get_type()->as_string());
+    }
+
+private:
+    Node::Ptr m_left, m_type;
+};
+
+class OpAssignTypeAndLiteral : public Node {
+public:
+    explicit OpAssignTypeAndLiteral(const Node::Ptr &left, const Node::Ptr &type, const Node::Ptr &value)
+        : Node(OP_ASSIGN), m_left(left), m_type(type), m_value(value) {
+            assert(left);
+            assert(type);
+            assert(value);  
+        }
+    auto get_left() const {return m_left; }
+    auto get_type() const {return m_type; }
+    auto get_value() const {return m_value; }
+    std::string as_string() const override {
+        assert(get_left());
+        assert(get_type());
+        assert(get_value());
+        return fmt::format("({}: {} = {})", get_left()->as_string(),get_type()->as_string(), get_value()->as_string());
+    }
+
+private:
+    Node::Ptr m_left,  m_type,  m_value;
+};
 
 }
 #endif // KIRAZ_AST_OPERATOR_H

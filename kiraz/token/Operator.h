@@ -50,6 +50,12 @@ public:
     OpAssign() : Operator(OP_ASSIGN) {}
     std::string as_string() const override {return "OP_ASSIGN";}
 };
+
+class OpColon : public Operator {
+public:
+    OpColon() : Operator(OP_COLON) {}
+    std::string as_string() const override {return "OP_COLON";}
+};
 }
 
 #endif

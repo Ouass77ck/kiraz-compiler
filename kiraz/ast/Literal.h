@@ -23,6 +23,15 @@ private:
     int m_operator;
     Node::Cptr m_operand;
 };
+
+class Type : public Node {
+public:
+    Type(Token::Ptr);
+
+    std::string as_string() const override {return fmt::format("Type({})", m_value);}
+private:
+    std::string m_value;
+};
 }
 
 #endif

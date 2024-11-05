@@ -5,4 +5,10 @@ namespace token {
 
 Integer::~Integer() {}
 
+Keyword::~Keyword() {}
+
+Identifier::~Identifier() {}
+
+Type::~Type() {}
+
 }
