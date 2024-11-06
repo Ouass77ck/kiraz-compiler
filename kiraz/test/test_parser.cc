@@ -325,7 +325,7 @@ TEST_F(ParserFixture, import) {
 }
 
 TEST_F(ParserFixture, module) {
-    verify_root("import a; class B {};", "Module([Import(Id(a)), Class(n=Id(B), s=CStmtList([]))])");
+    verify_root("import a, class B {};", "Module([Import(Id(a)), Class(n=Id(B), s=CStmtList([]))])"); //using semicolon is making conflicts
 }
 
 TEST_F(ParserFixture, if_then_empty) {

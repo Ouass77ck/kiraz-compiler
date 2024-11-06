@@ -39,6 +39,7 @@ extern int yylineno;
 %left OP_MULT OP_DIVF
 %right OP_ASSIGN
 
+%precedence KW_CLASS
 %%
 
 program
@@ -47,6 +48,7 @@ program
 
 stmt
     : assignment OP_SEMICOLON
+    | module
     | expression OP_SEMICOLON
     | str OP_SEMICOLON
     | ifelse OP_SEMICOLON
@@ -97,6 +99,10 @@ class
     ;
 import
     : KW_IMPORT id {$$ = Node::add<ast::OpImport>($2);
+    };
+
+module
+    : import OP_COMMA class OP_SEMICOLON {$$ = Node::add<ast::OpModule>($1, $3);
     };
 
 stmtlist

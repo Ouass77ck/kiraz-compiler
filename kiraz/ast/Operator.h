@@ -376,6 +376,26 @@ private:
     Node::Ptr m_name, m_body;
 };
 
+class OpModule : public Node {
+public:
+    explicit OpModule(const Node::Ptr &name, const Node::Ptr &body)
+        : Node(KW_IMPORT), m_name(name), m_body(body) {
+            assert(name);
+            assert(body);
+        }
+
+    auto get_name() const { return m_name; }
+    auto get_body() const { return m_body; }
+
+    std::string as_string() const override {
+        return fmt::format("Module([{}, {}])", 
+                           get_name()->as_string(), 
+                           get_body()->as_string());
+    }
+
+private:
+    Node::Ptr m_name, m_body;
+};
 
 }
 #endif // KIRAZ_AST_OPERATOR_H
