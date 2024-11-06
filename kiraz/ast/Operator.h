@@ -85,7 +85,7 @@ public:
     std::string as_string() const override {
         assert(get_left());
         assert(get_right());
-        return fmt::format("({} = {})", get_left()->as_string(), get_right()->as_string());
+        return fmt::format("Let(n={}, i={})", get_left()->as_string(), get_right()->as_string());
     }
 
 private:
@@ -105,7 +105,7 @@ public:
     std::string as_string() const override {
         assert(get_left());
         assert(get_type());
-        return fmt::format("({}: {})",get_left()->as_string(), get_type()->as_string());
+        return fmt::format("Let(n={}, t={})",get_left()->as_string(), get_type()->as_string());
     }
 
 private:
@@ -127,13 +127,32 @@ public:
         assert(get_left());
         assert(get_type());
         assert(get_value());
-        return fmt::format("({}: {} = {})", get_left()->as_string(),get_type()->as_string(), get_value()->as_string());
+        return fmt::format("Let(n={}, t={}, i={})", get_left()->as_string(),get_type()->as_string(), get_value()->as_string());
     }
 
 private:
     Node::Ptr m_left,  m_type,  m_value;
 };
 
+class OpAssignLiteralWithoutLet : public Node {
+public:
+    explicit OpAssignLiteralWithoutLet(const Node::Ptr &left, const Node::Ptr &right)
+        : Node(OP_ASSIGN), m_left(left), m_right(right) {
+            assert (left);
+            assert (right);
+        }
+
+    auto get_left() const {return m_left; }
+    auto get_right() const {return m_right; }
+    std::string as_string() const override {
+        assert(get_left());
+        assert(get_right());
+        return fmt::format("Assign(l={}, r={})", get_left()->as_string(), get_right()->as_string());
+    }
+
+private:
+    Node::Ptr m_left, m_right;
+};
 
 
 class OpBinary2 : public Node {
@@ -179,6 +198,8 @@ private:
     Node::Ptr m_left, m_right;
 };
 
+
+
 class OpAdd2 : public OpBinary2 {
 public:
     OpAdd2(const Node::Ptr &left, const Node::Ptr &right) : OpBinary2(OP_PLUS, left, right)  {}
@@ -202,6 +223,50 @@ class OpDivF2 : public OpBinary2 {
 
 };
 
+class OpIfThen : public Node {
+public:
+    explicit OpIfThen(const Node::Ptr &condition, const Node::Ptr &then_block)
+        : Node(KW_IF), m_condition(condition), m_then_block(then_block) {
+            assert(condition);
+            assert(then_block);
+        }
+
+    auto get_condition() const { return m_condition; }
+    auto get_then_block() const { return m_then_block; }
+
+    std::string as_string() const override {
+        return fmt::format("If(?={}, then=[{}], else=[])", 
+                           get_condition()->as_string(), 
+                           get_then_block()->as_string());
+    }
+
+private:
+    Node::Ptr m_condition, m_then_block;
+};
+
+class OpIfThenElse : public Node {
+public:
+    explicit OpIfThenElse(const Node::Ptr &condition, const Node::Ptr &then_block, const Node::Ptr &else_block)
+        : Node(KW_IF), m_condition(condition), m_then_block(then_block), m_else_block(else_block) {
+            assert(condition);
+            assert(then_block);
+            assert(else_block);
+        }
+
+    auto get_condition() const { return m_condition; }
+    auto get_then_block() const { return m_then_block; }
+    auto get_else_block() const { return m_else_block; }
+
+    std::string as_string() const override {
+        return fmt::format("If(?={}, then=[{}], else=[{}])", 
+                           get_condition()->as_string(), 
+                           get_then_block()->as_string(), 
+                           get_else_block()->as_string());
+    }
+
+private:
+    Node::Ptr m_condition, m_then_block, m_else_block;
+};
 
 }
 #endif // KIRAZ_AST_OPERATOR_H

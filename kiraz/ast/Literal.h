@@ -16,7 +16,7 @@ class Integer2 : public Node {
 public:
     Integer2(Token::Ptr);
 
-    std::string as_string() const override {return fmt::format("Int(10,{})", m_value);}
+    std::string as_string() const override {return fmt::format("Int(10, {})", m_value);}
 private:
     int64_t m_value;
 };
@@ -25,7 +25,12 @@ class SignedNode : public Node {
 public:
     SignedNode(int op, Node::Cptr operand) : Node(L_INTEGER), m_operator(op), m_operand(operand) {}
     std::string as_string() const override {
-        return fmt::format("Integer'({}, {})", m_operator, m_operand->as_string());
+        if (m_operator==OP_MINUS) {
+            return fmt::format("Signed(OP_MINUS, {})", m_operand->as_string());
+            }
+        else{
+            return fmt::format("Signed(OP_PLUS, {})", m_operand->as_string());
+        }
     }
 private:
     int m_operator;
@@ -45,7 +50,7 @@ class Identifier : public Node {
 public:
     Identifier(Token::Ptr);
 
-    std::string as_string() const override {return fmt::format("Identifier({})", m_value);}
+    std::string as_string() const override {return fmt::format("Id({})", m_value);}
 private:
     std::string m_value;
 };

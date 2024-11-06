@@ -129,11 +129,11 @@ TEST_F(ParserFixture, string_with_newline) {
 }
 
 TEST_F(ParserFixture, add_signed) {
-    verify_single("1 + -2;", "OP_PLUS(l=Int(10, 1), r=Signed(OP_MINUS, Int(10, 2)))");
+    verify_single("1 + -2;", "Add(l=Int(10, 1), r=Signed(OP_MINUS, Int(10, 2)))");
 }
 
 TEST_F(ParserFixture, signed_add) {
-    verify_single("-1 + 2;", "OP_PLUS(l=Signed(OP_MINUS, Int(10, 1)), r=Int(10, 2))");
+    verify_single("-1 + 2;", "Add(l=Signed(OP_MINUS, Int(10, 1)), r=Int(10, 2))");
 }
 
 TEST_F(ParserFixture, add_mul) {
@@ -224,16 +224,16 @@ TEST_F(ParserFixture, assignment_iden) {
 
 TEST_F(ParserFixture, assignment_iden_neg_2) {
     verify_single(
-            "a = -(b / 5);", "Assign(l=Id(a), r=Signed(OP_MINUS, OP_DIVF(l=Id(b), r=Int(10, 5))))");
+            "a = -(b / 5);", "Assign(l=Id(a), r=Signed(OP_MINUS, DivF(l=Id(b), r=Int(10, 5))))");
 }
 
 TEST_F(ParserFixture, assignment_iden_neg_3) {
     verify_single("a = -(b / 5) + 3;",
             "Assign("
             "l=Id(a), "
-            "r=Add(l=Signed(OP_MINUS, OP_DIVF(l=Id(b), r=Int(10, 5))), r=Int(10, 3))"
+            "r=Add(l=Signed(OP_MINUS, DivF(l=Id(b), r=Int(10, 5))), r=Int(10, 3))"
             ")");
-}
+}//i think you made a mistake here by puting OP_DIVF instead of DivF
 
 TEST_F(ParserFixture, let_with_val) {
     verify_single("let a = 5;", "Let(n=Id(a), i=Int(10, 5))");

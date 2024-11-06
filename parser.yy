@@ -1,6 +1,5 @@
 %{
 #include "lexer.hpp"
-
 #include <kiraz/ast/Operator.h>
 #include <kiraz/ast/Literal.h>
 #include <kiraz/token/Literal.h>
@@ -11,10 +10,14 @@ extern int yylineno;
 %}
 
 %token KW_LET
+%token KW_IF
+%token KW_ELSE
 %token IDENTIFIER
 %token OP_ASSIGN
 %token OP_LPAREN
 %token OP_RPAREN
+%token OP_LBRACE
+%token OP_RBRACE
 %token OP_PLUS
 %token OP_MINUS
 %token OP_DIVF
@@ -25,7 +28,6 @@ extern int yylineno;
 %token L_INTEGER
 %token TYPE
 %token SSTRING
-
 %token REJECTED
 
 %left OP_PLUS OP_MINUS
@@ -33,27 +35,45 @@ extern int yylineno;
 %right OP_ASSIGN
 
 %%
+
 program
     : stmt
     ;
 
 stmt
-    : assignment
-    | expression
-    | expression_with_semicolon
-    | str 
+    : assignment OP_SEMICOLON
+    | expression OP_SEMICOLON
+    | str OP_SEMICOLON
+    | ifelse OP_SEMICOLON
     ;
 
 assignment
-    : KW_LET id OP_ASSIGN expression OP_SEMICOLON{
+    : KW_LET id OP_ASSIGN expression {
         $$ = Node::add<ast::OpAssignLiteral>($2, $4);
     }
-    | KW_LET id OP_COLON type OP_ASSIGN expression OP_SEMICOLON{
+    | KW_LET id OP_COLON id OP_ASSIGN expression {
         $$ = Node::add<ast::OpAssignTypeAndLiteral>($2, $4, $6);
     }
-    | KW_LET id OP_COLON type OP_SEMICOLON{
+    | KW_LET id OP_COLON id {
         $$ = Node::add<ast::OpAssignType>($2, $4);
     }
+    | id OP_ASSIGN expression {
+        $$ = Node::add<ast::OpAssignLiteralWithoutLet>($1, $3);
+    }
+    ;
+
+ifelse
+    : KW_IF OP_LPAREN expression OP_RPAREN OP_LBRACE stmtlist OP_RBRACE {
+        $$ = Node::add<ast::OpIfThen>($3, $6);
+    }
+    | KW_IF OP_LPAREN expression OP_RPAREN OP_LBRACE stmtlist OP_RBRACE KW_ELSE OP_LBRACE stmtlist OP_RBRACE {
+        $$ = Node::add<ast::OpIfThenElse>($3, $6, $10);
+    }
+    ;
+
+stmtlist
+    : /* empty */ { $$ = Node::create_list(); }
+    | stmtlist stmt { $$ = Node::append_to_list($1, $2); }
     ;
 
 id
@@ -61,48 +81,33 @@ id
     ;
 
 expression
-    : expression OP_PLUS expression { $$ = Node::add<ast::OpAdd>($1, $3); }
-    | expression OP_MINUS expression { $$ = Node::add<ast::OpSub>($1, $3); }
+    : expression OP_PLUS term { $$ = Node::add<ast::OpAdd2>($1, $3); }
+    | expression OP_MINUS term { $$ = Node::add<ast::OpSub2>($1, $3); }
     | term
     ;
 
-expression_with_semicolon
-    : expression OP_PLUS expression OP_SEMICOLON { $$ = Node::add<ast::OpAdd2>($1, $3); }
-    | expression OP_MINUS expression OP_SEMICOLON { $$ = Node::add<ast::OpSub2>($1, $3); }
-    | term_with_semicolon
-    ;
-
 term
-    : term OP_MULT term { $$ = Node::add<ast::OpMult>($1, $3); }
-    | term OP_DIVF term { $$ = Node::add<ast::OpDivF>($1, $3); }
+    : term OP_MULT factor { $$ = Node::add<ast::OpMult2>($1, $3); }
+    | term OP_DIVF factor { $$ = Node::add<ast::OpDivF2>($1, $3); }
     | factor
     ;
 
-term_with_semicolon
-    : term OP_MULT term OP_SEMICOLON { $$ = Node::add<ast::OpMult2>($1, $3); }
-    | term OP_DIVF term OP_SEMICOLON { $$ = Node::add<ast::OpDivF2>($1, $3); }
-    | factor OP_SEMICOLON { $$ = $1; }
-    ;
-    
 factor
     : posneg
+    | id
     | OP_LPAREN expression OP_RPAREN { $$ = $2; }
     ;
 
-
 posneg
-    : L_INTEGER { $$ = Node::add<ast::Integer>(curtoken); }
+    : L_INTEGER { $$ = Node::add<ast::Integer2>(curtoken); }
     | OP_PLUS factor { $$ = Node::add<ast::SignedNode>(OP_PLUS, $2); }
     | OP_MINUS factor { $$ = Node::add<ast::SignedNode>(OP_MINUS, $2); }
     ;
 
-type
-    : TYPE { $$ = Node::add<ast::Type>(curtoken); }
+str
+    : SSTRING { $$ = Node::add<ast::String>(curtoken); }
     ;
 
-str
-    : SSTRING OP_SEMICOLON { $$ = Node::add<ast::String>(curtoken); }
-    ;
 %%
 
 int yyerror(const char *s) {
