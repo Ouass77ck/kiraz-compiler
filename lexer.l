@@ -20,6 +20,7 @@ extern std::shared_ptr<Token> curtoken;
 ")"          {colno += yyleng; curtoken = Token::New<OpRparen>(); return OP_RPAREN;}
 "="          {colno += yyleng; curtoken = Token::New<OpAssign>(); return OP_ASSIGN;}
 ":"          {colno += yyleng; curtoken = Token::New<OpColon>(); return OP_COLON; }
+","          {colno += yyleng; return OP_COMMA; }
 ";"          {colno += yyleng; return OP_SEMICOLON; }
 "{"          {colno += yyleng; return OP_LBRACE; }
 "}"          {colno += yyleng; return OP_RBRACE; }
@@ -47,6 +48,26 @@ extern std::shared_ptr<Token> curtoken;
     return KW_ELSE;
 }
 
+"while" {
+    colno += yyleng;
+    curtoken = Token::New<Keyword>("while");
+    return KW_WHILE;
+}
+"func" {
+    colno += yyleng;
+    curtoken = Token::New<Keyword>("func");
+    return KW_FUNC;
+}
+"class" {
+    colno += yyleng;
+    curtoken = Token::New<Keyword>("class");
+    return KW_CLASS;
+}
+"import" {
+    colno += yyleng;
+    curtoken = Token::New<Keyword>("import");
+    return KW_IMPORT;
+}
 \"([^\"\\]|\\[\"ntr])*\" {
     colno += yyleng;
     std::string decoded_text;

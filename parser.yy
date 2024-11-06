@@ -12,6 +12,10 @@ extern int yylineno;
 %token KW_LET
 %token KW_IF
 %token KW_ELSE
+%token KW_WHILE
+%token KW_FUNC
+%token KW_CLASS
+%token KW_IMPORT
 %token IDENTIFIER
 %token OP_ASSIGN
 %token OP_LPAREN
@@ -23,6 +27,7 @@ extern int yylineno;
 %token OP_DIVF
 %token OP_MULT
 %token OP_COLON
+%token OP_COMMA
 %token OP_SEMICOLON
 
 %token L_INTEGER
@@ -45,6 +50,10 @@ stmt
     | expression OP_SEMICOLON
     | str OP_SEMICOLON
     | ifelse OP_SEMICOLON
+    | while OP_SEMICOLON
+    | func OP_SEMICOLON
+    | class OP_SEMICOLON
+    | import OP_SEMICOLON
     ;
 
 assignment
@@ -71,9 +80,38 @@ ifelse
     }
     ;
 
+while
+    : KW_WHILE OP_LPAREN expression OP_RPAREN OP_LBRACE stmtlist OP_RBRACE {
+        $$ = Node::add<ast::OpWhile>($3, $6);
+    };
+
+func
+    : KW_FUNC id OP_LPAREN argslist OP_RPAREN OP_COLON id OP_LBRACE stmtlist OP_RBRACE {
+        $$ = Node::add<ast::OpFunc>($2, $4, $7, $9);
+    }
+    ;
+class
+    : KW_CLASS id OP_LBRACE stmtlist OP_RBRACE{
+        $$ = Node::add<ast::OpClass>($2, $4);
+    }
+    ;
+import
+    : KW_IMPORT id {$$ = Node::add<ast::OpImport>($2);
+    };
+
 stmtlist
     : /* empty */ { $$ = Node::create_list(); }
     | stmtlist stmt { $$ = Node::append_to_list($1, $2); }
+    ;
+
+argslist
+    : /* empty */ { $$ = Node::create_list(); }
+    | argslist OP_COMMA arg { $$ = Node::append_to_list($1, $3); }
+    | arg { $$ = Node::append_to_list(Node::create_list(), $1); }
+    ;
+
+arg
+    : id OP_COLON id { $$ = Node::add<ast::OpArg>($1, $3); }
     ;
 
 id

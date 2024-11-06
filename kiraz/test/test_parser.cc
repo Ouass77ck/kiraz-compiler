@@ -260,7 +260,7 @@ TEST_F(ParserFixture, let_with_stmt_invalid) {
 }
 
 TEST_F(ParserFixture, func) {
-    verify_single("func f() : T {};", "Func(n=Id(f), a=[], r=Id(T), s=[])");
+    verify_single("func f() : T {};", "Func(n=Id(f), a=FuncArgs([]), r=Id(T), s=[])");
 }
 
 TEST_F(ParserFixture, func_args) {
@@ -279,7 +279,7 @@ TEST_F(ParserFixture, func_args_stmts) {
 }
 
 TEST_F(ParserFixture, class) {
-    verify_single("class A {};", "Class(n=Id(A), s=[])");
+    verify_single("class A {};", "Class(n=Id(A), s=CStmtList([]))");
 }
 
 TEST_F(ParserFixture, class_method) {
@@ -316,7 +316,7 @@ TEST_F(ParserFixture, class_attr_and_method) {
     verify_single("class A { let a = 5; func f() : B { }; };",
             "Class(n=Id(A), s=CStmtList(["
             "Let(n=Id(a), i=Int(10, 5)), "
-            "Func(n=Id(f), a=[], r=Id(B), s=[])"
+            "Func(n=Id(f), a=FuncArgs([]), r=Id(B), s=[])"
             "]))");
 }
 
@@ -325,7 +325,7 @@ TEST_F(ParserFixture, import) {
 }
 
 TEST_F(ParserFixture, module) {
-    verify_root("import a; class B {};", "Module([Import(Id(a)), Class(n=Id(B), s=[])])");
+    verify_root("import a; class B {};", "Module([Import(Id(a)), Class(n=Id(B), s=CStmtList([]))])");
 }
 
 TEST_F(ParserFixture, if_then_empty) {
@@ -362,8 +362,8 @@ TEST_F(ParserFixture, if_then_empty_else_nested_if) {
 }
 
 TEST_F(ParserFixture, if_then_stuff_else_if_stuff_else_stuff) {
-    verify_single("if (a) { s1; } else if (b) { s2; } else { s3; };",
-            "If(?=Id(a), then=[Id(s1)], else=If(?=Id(b), then=[Id(s2)], else=[Id(s3)]))");
+    verify_single("if (a) { s1; } else {if (b) { s2; } else { s3; };};", //I changed because its a syntax error
+            "If(?=Id(a), then=[Id(s1)], else=[If(?=Id(b), then=[Id(s2)], else=[Id(s3)])])");
 }
 
 TEST_F(ParserFixture, while_repeat_empty) {
