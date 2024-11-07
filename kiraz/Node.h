@@ -51,7 +51,6 @@ private:
     int m_col = 0;
 };
 
-// Définition de NodeList avant les méthodes de gestion de liste
 class NodeList : public Node {
 public:
     NodeList() = default;
@@ -81,7 +80,6 @@ private:
     std::vector<Node::Ptr> m_statements;
 };
 
-// Définition des méthodes `create_list` et `append_to_list`
 inline Node::Ptr Node::create_list() {
     return std::make_shared<NodeList>();
 }

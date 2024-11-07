@@ -16,8 +16,14 @@ extern int yylineno;
 %token KW_FUNC
 %token KW_CLASS
 %token KW_IMPORT
+%token KW_RETURN
 %token IDENTIFIER
 %token OP_ASSIGN
+%token OP_GT
+%token OP_GE
+%token OP_LT
+%token OP_LE
+%token OP_EQ
 %token OP_LPAREN
 %token OP_RPAREN
 %token OP_LBRACE
@@ -59,13 +65,12 @@ stmt
     | func OP_SEMICOLON
     | class OP_SEMICOLON
     | import OP_SEMICOLON
+    | return OP_SEMICOLON
+    | logic OP_SEMICOLON
     ;
 
 assignment
-    : KW_LET id OP_ASSIGN posneg {
-        $$ = Node::add<ast::OpAssignLiteral>($2, $4);
-    }
-    | KW_LET id OP_ASSIGN str {
+    : KW_LET id OP_ASSIGN expression {
         $$ = Node::add<ast::OpAssignLiteral>($2, $4);
     }
     | KW_LET id OP_COLON id OP_ASSIGN expression {
@@ -78,7 +83,27 @@ assignment
         $$ = Node::add<ast::OpAssignLiteralWithoutLet>($1, $3);
     }
     ;
+return
+    : KW_RETURN expression {$$ = Node::add<ast::OpReturn>($2);}
+    | KW_RETURN logic {$$ = Node::add<ast::OpReturn>($2);}
+;
 
+logic:
+    | expression OP_EQ expression {
+        $$ = Node::add<ast::OpEq>($1, $3);
+    }
+    | expression OP_GT expression {
+        $$ = Node::add<ast::OpGt>($1, $3);
+    }
+    | expression OP_LT expression {
+        $$ = Node::add<ast::OpLt>($1, $3);
+    }
+    | expression OP_GE expression {
+        $$ = Node::add<ast::OpGe>($1, $3);
+    }
+    | expression OP_LE expression {
+        $$ = Node::add<ast::OpLe>($1, $3);
+    };
 ifelse
     : KW_IF OP_LPAREN expression OP_RPAREN OP_LBRACE stmtlist OP_RBRACE {
         $$ = Node::add<ast::OpIfThen>($3, $6);
@@ -90,6 +115,9 @@ ifelse
 
 while
     : KW_WHILE OP_LPAREN expression OP_RPAREN OP_LBRACE stmtlist OP_RBRACE {
+        $$ = Node::add<ast::OpWhile>($3, $6);
+    };
+    | KW_WHILE OP_LPAREN logic OP_RPAREN OP_LBRACE stmtlist OP_RBRACE {
         $$ = Node::add<ast::OpWhile>($3, $6);
     };
 
@@ -149,7 +177,7 @@ factor
     ;
 
 posneg
-    : L_INTEGER { $$ = Node::add<ast::Integer2>(curtoken); }
+    : L_INTEGER { $$ = Node::add<ast::Integer>(curtoken); }
     | OP_PLUS factor { $$ = Node::add<ast::SignedNode>(OP_PLUS, $2); }
     | OP_MINUS factor { $$ = Node::add<ast::SignedNode>(OP_MINUS, $2); }
     ;

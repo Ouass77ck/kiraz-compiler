@@ -154,6 +154,105 @@ private:
     Node::Ptr m_left, m_right;
 };
 
+class OpGt : public Node {
+public:
+    explicit OpGt(const Node::Ptr &left, const Node::Ptr &right)
+        : Node(OP_GT), m_left(left), m_right(right) {
+            assert (left);
+            assert (right);
+        }
+
+    auto get_left() const {return m_left; }
+    auto get_right() const {return m_right; }
+    std::string as_string() const override {
+        assert(get_left());
+        assert(get_right());
+        return fmt::format("OpGt(l={}, r={})", get_left()->as_string(), get_right()->as_string());
+    }
+
+private:
+    Node::Ptr m_left, m_right;
+};
+
+class OpGe : public Node {
+public:
+    explicit OpGe(const Node::Ptr &left, const Node::Ptr &right)
+        : Node(OP_GE), m_left(left), m_right(right) {
+            assert (left);
+            assert (right);
+        }
+
+    auto get_left() const {return m_left; }
+    auto get_right() const {return m_right; }
+    std::string as_string() const override {
+        assert(get_left());
+        assert(get_right());
+        return fmt::format("OpGe(l={}, r={})", get_left()->as_string(), get_right()->as_string());
+    }
+
+private:
+    Node::Ptr m_left, m_right;
+};
+
+class OpLt : public Node {
+public:
+    explicit OpLt(const Node::Ptr &left, const Node::Ptr &right)
+        : Node(OP_LT), m_left(left), m_right(right) {
+            assert (left);
+            assert (right);
+        }
+
+    auto get_left() const {return m_left; }
+    auto get_right() const {return m_right; }
+    std::string as_string() const override {
+        assert(get_left());
+        assert(get_right());
+        return fmt::format("OpLt(l={}, r={})", get_left()->as_string(), get_right()->as_string());
+    }
+
+private:
+    Node::Ptr m_left, m_right;
+};
+
+class OpLe : public Node {
+public:
+    explicit OpLe(const Node::Ptr &left, const Node::Ptr &right)
+        : Node(OP_LE), m_left(left), m_right(right) {
+            assert (left);
+            assert (right);
+        }
+
+    auto get_left() const {return m_left; }
+    auto get_right() const {return m_right; }
+    std::string as_string() const override {
+        assert(get_left());
+        assert(get_right());
+        return fmt::format("OpLe(l={}, r={})", get_left()->as_string(), get_right()->as_string());
+    }
+
+private:
+    Node::Ptr m_left, m_right;
+};
+
+class OpEq : public Node {
+public:
+    explicit OpEq(const Node::Ptr &left, const Node::Ptr &right)
+        : Node(OP_EQ), m_left(left), m_right(right) {
+            assert (left);
+            assert (right);
+        }
+
+    auto get_left() const {return m_left; }
+    auto get_right() const {return m_right; }
+    std::string as_string() const override {
+        assert(get_left());
+        assert(get_right());
+        return fmt::format("OpEq(l={}, r={})", get_left()->as_string(), get_right()->as_string());
+    }
+
+private:
+    Node::Ptr m_left, m_right;
+};
 
 class OpBinary2 : public Node {
 protected:
@@ -326,12 +425,20 @@ public:
     auto get_body() const { return m_body; }
 
     std::string as_string() const override {
-        return fmt::format("Func(n={}, a=FuncArgs([{}]), r={}, s=[{}])", 
-                           get_name()->as_string(), 
-                           get_args()->as_string(), 
-                           get_return_type()->as_string(), 
-                           get_body()->as_string());
-    }
+        if (get_args()->as_string()==""){
+            return fmt::format("Func(n={}, a=[{}], r={}, s=[{}])", 
+                            get_name()->as_string(), 
+                            get_args()->as_string(), 
+                            get_return_type()->as_string(), 
+                            get_body()->as_string());
+        }
+        else{
+            return fmt::format("Func(n={}, a=FuncArgs([{}]), r={}, s=[{}])", 
+                            get_name()->as_string(), 
+                            get_args()->as_string(), 
+                            get_return_type()->as_string(), 
+                            get_body()->as_string());
+        }}
 
 private:
     Node::Ptr m_name, m_args, m_return_type, m_body; 
@@ -349,10 +456,19 @@ public:
     auto get_body() const { return m_body; }
 
     std::string as_string() const override {
-        return fmt::format("Class(n={}, s=CStmtList([{}]))", 
+        if (get_body()->as_string()=="")
+        {
+            return fmt::format("Class(n={}, s=[{}])", 
                            get_name()->as_string(), 
                            get_body()->as_string());
-    }
+                           }
+        else{
+            return fmt::format("Class(n={}, s=[{}])", 
+                           get_name()->as_string(), 
+                           get_body()->as_string());
+                           }
+        }
+    
 
 private:
     Node::Ptr m_name, m_body;
@@ -396,6 +512,23 @@ public:
 private:
     Node::Ptr m_name, m_body;
 };
+class OpReturn : public Node {
+public:
+    explicit OpReturn(const Node::Ptr &name)
+        : Node(KW_RETURN), m_name(name) {
+            assert(name);
+        }
+
+    auto get_name() const { return m_name; }
+
+    std::string as_string() const override {
+        return fmt::format("Return({})", 
+                           get_name()->as_string());
+    }
+
+private:
+    Node::Ptr m_name, m_body;
+};
 class OpPrgm : public Node {
 public:
     explicit OpPrgm(const Node::Ptr &name)
@@ -406,7 +539,7 @@ public:
     auto get_name() const { return m_name; }
 
     std::string as_string() const override {
-        return fmt::format("Prgm([{}])", 
+        return fmt::format("Module([{}])", 
                            get_name()->as_string());
     }
 
