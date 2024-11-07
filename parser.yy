@@ -32,6 +32,7 @@ extern int yylineno;
 %token OP_MINUS
 %token OP_DIVF
 %token OP_MULT
+%token OP_DOT
 %token OP_COLON
 %token OP_COMMA
 %token OP_SEMICOLON
@@ -42,7 +43,7 @@ extern int yylineno;
 %token REJECTED
 
 %left OP_PLUS OP_MINUS
-%left OP_MULT OP_DIVF
+%left OP_MULT OP_DIVF OP_DOT
 %right OP_ASSIGN
 
 %precedence KW_CLASS
@@ -67,6 +68,7 @@ stmt
     | import OP_SEMICOLON
     | return OP_SEMICOLON
     | logic OP_SEMICOLON
+    | call OP_SEMICOLON
     ;
 
 assignment
@@ -84,8 +86,9 @@ assignment
     }
     ;
 return
-    : KW_RETURN expression {$$ = Node::add<ast::OpReturn>($2);}
+    : KW_RETURN call {$$ = Node::add<ast::OpReturn>($2);}
     | KW_RETURN logic {$$ = Node::add<ast::OpReturn>($2);}
+    | KW_RETURN expression {$$ = Node::add<ast::OpReturn>($2);}
 ;
 
 logic:
@@ -153,9 +156,23 @@ argslist
 arg
     : id OP_COLON id { $$ = Node::add<ast::OpArg>($1, $3); }
     ;
-
+idslist
+    : /* empty */ { $$ = Node::create_list(); }
+    | idslist OP_COMMA id { $$ = Node::append_to_list($1, $3); }
+    | id { $$ = Node::append_to_list(Node::create_list(), $1); }
+    ;
 id
     : IDENTIFIER { $$ = Node::add<ast::Identifier>(curtoken); }
+    ;
+
+call
+    : dot OP_LPAREN idslist OP_RPAREN { $$ = Node::add<ast::OpCall>($1, $3); }
+    ;
+
+
+dot
+    :id OP_DOT id { $$ = Node::add<ast::OpDot>($1, $3); }
+    |id OP_DOT id OP_DOT id{ $$ = Node::add<ast::OpDot>(($$ = Node::add<ast::OpDot>($1, $3)), $5) ; }
     ;
 
 expression

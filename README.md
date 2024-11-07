@@ -30,4 +30,11 @@ ctest -V
 ctest -R plus.*  # (regex)
 ```
 
-I believe that some tests are outdated or false so it is not a "100%"
+95% tests passed, 4 tests failed out of 84
+
+It's able to parse a file with:
+```shell
+ ./kirazc -f [filename]
+ ````
+
+

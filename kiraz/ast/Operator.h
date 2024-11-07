@@ -287,6 +287,9 @@ public:
                 break;
             case OP_ASSIGN:
               opstr = "Assign";
+            case OP_DOT:
+              opstr = "Dot";
+              break;
             default:
                 opstr = "UnknownOp";
                 break;
@@ -321,7 +324,11 @@ class OpDivF2 : public OpBinary2 {
     OpDivF2(const Node::Ptr &left, const Node::Ptr &right) : OpBinary2(OP_DIVF, left, right)  {}
 
 };
+class OpDot : public OpBinary2 {
+    public:
+    OpDot(const Node::Ptr &left, const Node::Ptr &right) : OpBinary2(OP_DOT, left, right)  {}
 
+};
 class OpIfThen : public Node {
 public:
     explicit OpIfThen(const Node::Ptr &condition, const Node::Ptr &then_block)
@@ -473,6 +480,37 @@ public:
 private:
     Node::Ptr m_name, m_body;
 };
+
+class OpCall : public Node {
+public:
+    explicit OpCall(const Node::Ptr &name, const Node::Ptr &body)
+        : Node(KW_CLASS), m_name(name), m_body(body) {
+            assert(name);
+            assert(body);
+        }
+
+    auto get_name() const { return m_name; }
+    auto get_body() const { return m_body; }
+
+    std::string as_string() const override {
+        if (get_body()->as_string()=="")
+        {
+            return fmt::format("Call(n={}, a=FuncArgs([{}]))", 
+                           get_name()->as_string(), 
+                           get_body()->as_string());
+                           }
+        else{
+            return fmt::format("Call(n={}, a=FuncArgs([{}]))", 
+                           get_name()->as_string(), 
+                           get_body()->as_string());
+                           }
+        }
+    
+
+private:
+    Node::Ptr m_name, m_body;
+};
+
 
 class OpImport : public Node {
 public:
