@@ -41,10 +41,13 @@ extern int yylineno;
 
 %precedence KW_CLASS
 %%
-
-program
-    : stmt
+all
+    :program
     ;
+program
+    : stmtlist {$$ = Node::add<ast::OpPrgm>($1);}
+    ;
+
 
 stmt
     : assignment OP_SEMICOLON

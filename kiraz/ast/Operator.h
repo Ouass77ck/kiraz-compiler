@@ -396,6 +396,22 @@ public:
 private:
     Node::Ptr m_name, m_body;
 };
+class OpPrgm : public Node {
+public:
+    explicit OpPrgm(const Node::Ptr &name)
+        : Node(KW_IMPORT), m_name(name) {
+            assert(name);
+        }
 
+    auto get_name() const { return m_name; }
+
+    std::string as_string() const override {
+        return fmt::format("Prgm([{}])", 
+                           get_name()->as_string());
+    }
+
+private:
+    Node::Ptr m_name, m_body;
+};
 }
 #endif // KIRAZ_AST_OPERATOR_H

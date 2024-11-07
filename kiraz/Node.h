@@ -22,7 +22,6 @@ public:
     virtual std::string as_string() const = 0;
     void print() { fmt::print("{}\n", as_string()); }
 
-    // Les méthodes `create_list` et `append_to_list` seront définies ici
     static Ptr create_list();
     static Ptr append_to_list(const Ptr& list, const Ptr& stmt);
 

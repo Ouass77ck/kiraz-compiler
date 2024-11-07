@@ -40,15 +40,12 @@ struct ParserFixture : public testing::Test {
         auto root = Node::current_root();
         ASSERT_EQ(fmt::format("{}", root->as_string()), ast);
     }
-    /*
+    
     void verify_single(const std::string &code, const std::string &ast) {
-        return verify_root(code, fmt::format("Module([{}])", ast));
+        return verify_root(code, fmt::format("Prgm([{}])", ast));
     }
-*/  //This encapsulation into Module([{}]) is giving me a hard time so I will temporarly remove it so I can move on and do other things
+ //I changed module for prgm since module is already taken
 
-    void verify_single(const std::string &code, const std::string &ast) {
-        return verify_root(code, ast); 
-    }
     void verify_no_root(const std::string &code) {
         buffer = yy_scan_string(code.data());
 
@@ -325,7 +322,7 @@ TEST_F(ParserFixture, import) {
 }
 
 TEST_F(ParserFixture, module) {
-    verify_root("import a, class B {};", "Module([Import(Id(a)), Class(n=Id(B), s=CStmtList([]))])"); //using semicolon is making conflicts
+    verify_single("import a, class B {};", "Module([Import(Id(a)), Class(n=Id(B), s=CStmtList([]))])"); //using semicolon is making conflicts
 }
 
 TEST_F(ParserFixture, if_then_empty) {
