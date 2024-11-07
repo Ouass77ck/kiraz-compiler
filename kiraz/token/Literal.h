@@ -11,7 +11,7 @@ public:
      : Token(L_INTEGER), m_base(base), m_value(value){};
     virtual ~Integer();
 
-    std::string as_string() const override {return fmt::format("Integer{}", m_value);}
+    std::string as_string() const override {return fmt::format("Integer: {}", m_value);}
     
     void print() {fmt::print("{}\n", as_string());}
 
@@ -33,7 +33,7 @@ public:
      : Token(L_INTEGER), m_base(base), m_value(value){};
     virtual ~Integer2();
 
-    std::string as_string() const override {return fmt::format("Integer{}", m_value);}
+    std::string as_string() const override {return fmt::format("Integer: {}", m_value);}
     
     void print() {fmt::print("{}\n", as_string());}
 
@@ -54,7 +54,7 @@ public:
     Keyword(const std::string &value) : Token(KW_LET), m_value(value) {}
 
     virtual ~Keyword();
-    std::string as_string() const override { return fmt::format("Keyword{}", m_value); }
+    std::string as_string() const override { return fmt::format("Keyword {}", m_value); }
 
     void print() {fmt::print("{}\n", as_string());}
 
@@ -70,7 +70,7 @@ public:
     Identifier(const std::string &value) : Token(IDENTIFIER), m_value(value) {}
 
     virtual ~Identifier();
-    std::string as_string() const override { return fmt::format("Identifier{}", m_value); }
+    std::string as_string() const override { return fmt::format("Identifier: {}", m_value); }
 
     void print() {fmt::print("{}\n", as_string());}
     static int colno;
@@ -84,7 +84,7 @@ class Type : public Token {
 public:
     Type(const std::string &value) : Token(TYPE), m_value(value) {}
     virtual ~Type();
-    std::string as_string() const override { return fmt::format("Type{}", m_value); }
+    std::string as_string() const override { return fmt::format("Type: {}", m_value); }
 
     void print() {fmt::print("{}\n", as_string());}
     static int colno;
@@ -98,7 +98,7 @@ class String : public Token {
 public:
     String(const std::string &value) : Token(SSTRING), m_value(value) {}
     virtual ~String();
-    std::string as_string() const override { return fmt::format("Str{}", m_value); }
+    std::string as_string() const override { return fmt::format("Str: {}", m_value); }
 
     void print() {fmt::print("{}\n", as_string());}
     static int colno;

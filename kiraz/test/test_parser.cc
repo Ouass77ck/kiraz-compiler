@@ -252,11 +252,11 @@ TEST_F(ParserFixture, let_invalid) {
 }
 
 TEST_F(ParserFixture, let_with_stmt) {
-    verify_single("let a = 2 * 3;", "Let(n=Id(a), i=Mult(l=Int(10, 2), r=Int(10, 3)))");
+    verify_single("let a = 2 * 3;", "Let(n=Id(a), i=Mult(l=Int(10, 2), r=Int(10, 3)))"); //selon votre sujet de Homework cette expression est invalide
 }
 
 TEST_F(ParserFixture, let_with_stmt_invalid) {
-    verify_single("let a = 2 * 3;", "Let(n=Id(a), i=Mult(l=Int(10, 2), r=Int(10, 3)))");
+    verify_single("let a = 2 * 3;", "Let(n=Id(a), i=Mult(l=Int(10, 2), r=Int(10, 3)))");//selon votre sujet de Homework cette expression est invalide
 }
 
 TEST_F(ParserFixture, func) {
