@@ -4,7 +4,7 @@ Here's how this is supposed to work
 ```
 mkdir build
 cd build
-cmake ../hw1 -DCMAKE_VERBOSE_MAKEFILE=1
+cmake ../
 make -j`nproc`
 ```
 
