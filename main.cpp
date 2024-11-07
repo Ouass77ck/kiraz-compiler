@@ -51,10 +51,37 @@ static int handle_mode_text(std::string_view arg) {
     return OK;
 }
 
+#include <fstream>
+#include <iostream>
+
+// ...
+
 static int handle_mode_file(std::string_view arg) {
-    fmt::print("TODO\n");
-    return ERR;
+
+    std::string filename(arg);
+
+    if (filename.size() < 3 || filename.substr(filename.size() - 3) != ".ki") {
+        fmt::print("Error: {} is not a '.ki' file\n", filename);
+        return ERR;
+    }
+
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        fmt::print("Error: Could not open file {}\n", filename);
+        return ERR;
+    }
+
+    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    file.close();
+
+    if (auto ret = test(content); ret != OK) {
+        fmt::print("Error: Parsing failed for file {}\n", filename);
+        return ret;
+    }
+
+    return OK;
 }
+
 
 int main(int argc, char **argv) {
     yydebug = 0;

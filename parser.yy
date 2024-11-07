@@ -62,6 +62,9 @@ assignment
     : KW_LET id OP_ASSIGN posneg {
         $$ = Node::add<ast::OpAssignLiteral>($2, $4);
     }
+    | KW_LET id OP_ASSIGN str {
+        $$ = Node::add<ast::OpAssignLiteral>($2, $4);
+    }
     | KW_LET id OP_COLON id OP_ASSIGN expression {
         $$ = Node::add<ast::OpAssignTypeAndLiteral>($2, $4, $6);
     }
