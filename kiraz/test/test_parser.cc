@@ -467,7 +467,7 @@ TEST_F(ParserFixture, func_bad_arg_name) {
 
 TEST_F(ParserFixture, return_literal) {
     verify_single("return 1;", "Return(Int(1))");
-}   
+}
 
 TEST_F(ParserFixture, return_func_call) {
     verify_single("return a.b(c,d,e);",
